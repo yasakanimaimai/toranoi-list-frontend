@@ -3,17 +3,19 @@ import { useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { ArticleForm } from '../components/ArticleForm'
+import { ArticleList } from '../components/ArticleList'
 import { Layout } from '../components/Layout'
-// import { TaskForm } from '../components/TaskForm'
-// import { TaskList } from '../components/TaskList'
-// import { Userinfo } from '../components/Userinfo'
+import { Userinfo } from '../components/UserInfo'
 
 const Dashboard: NextPage = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
+
   const logout = async () => {
-    queryClient.removeQueries(['tasks'])
+    // react queryでブラウザにキャッシュした情報を削除
     queryClient.removeQueries(['user'])
+    queryClient.removeQueries(['articles'])
     await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`)
     router.push('/')
   }
@@ -24,9 +26,9 @@ const Dashboard: NextPage = () => {
         onClick={logout} 
       >
       </LogoutIcon>
-      {/* <Userinfo />
-      <TaskForm />
-      <TaskList /> */}
+      <Userinfo />
+      <ArticleForm />
+      <ArticleList />
     </Layout>
   )
 }
