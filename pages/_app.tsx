@@ -5,6 +5,7 @@ import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import axios from 'axios';
+import { Auth0Provider } from "@auth0/auth0-react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,22 +33,31 @@ export function App({ Component, pageProps }: AppProps) {
     getCsrfToken()
   }, [])
   return (
-    // プロジェクト全体でreact queryを使用するための記述
-    <QueryClientProvider client={queryClient}>
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{
-          /** Put your mantine theme override here */
-          colorScheme: 'dark',
-          fontFamily: 'Verdana, sans-serif',
-        }}
-      >
-        <Component {...pageProps} />
-      </MantineProvider>
-      {/* react query devtoolsを使用するための設定 */}
-      <ReactQueryDevtools />
-    </QueryClientProvider>
+
+      // {/* プロジェクト全体でreact queryを使用するための記述 */}
+      <QueryClientProvider client={queryClient}>
+        <MantineProvider
+          withGlobalStyles
+          withNormalizeCSS
+          theme={{
+            /** Put your mantine theme override here */
+            colorScheme: 'dark',
+            fontFamily: 'Verdana, sans-serif',
+          }}
+        >
+          <Auth0Provider
+            domain={process.env.NEXT_PUBLIC_AUTH0_DOMAIN || ""}
+            clientId={process.env.NEXT_PUBLIC_CLIENT_ID || ""}
+            redirectUri={process.env.NEXT_PUBLIC_REDIRECT_URI}
+            audience={process.env.NEXT_PUBLIC_AUTH0_AUDIENCE}
+            scope={"read:status"}
+          >
+            <Component {...pageProps} />
+          </Auth0Provider>
+        </MantineProvider>
+        {/* react query devtoolsを使用するための設定 */}
+        <ReactQueryDevtools />
+      </QueryClientProvider>
   )
 }
 

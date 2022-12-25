@@ -17,6 +17,7 @@ import {
 import { useForm, yupResolver } from "@mantine/form"
 import { Layout } from "../components/Layout"
 import { AuthForm } from "../types"
+import { useAuth0 } from "@auth0/auth0-react"
 
 // Yupを使ってバリデーション
 const schema = Yup.object().shape({
@@ -69,6 +70,32 @@ const Home: NextPage = () => {
     }
   }
 
+  // 以下認証系
+  const { isAuthenticated, getAccessTokenWithPopup, getAccessTokenSilently, loginWithRedirect, logout } = useAuth0();
+
+  const getaccessToken = async () => {
+    // const accessToken = await getAccessTokenSilently({
+    //   audience: process.env.NEXT_PUBLIC_API_URL,
+    //   scope: "read:current_user",
+    // })
+    const accessToken = await getAccessTokenWithPopup()
+
+    console.log("accessToken:" + accessToken)
+    console.log("error:" + error)
+
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/user/get`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        }
+      }
+    )
+
+    console.log("data:" + JSON.stringify(data))
+  }
+
+
   return (
     // まずはLayoutでラップ
     <Layout title="Auth">
@@ -90,6 +117,7 @@ const Home: NextPage = () => {
       {/* 本来はonSubmitに関数を設置するときはprevent defaultを設定するが
           form.onSubmitでラップするとそれが不要になる
       */}
+{/* 
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <TextInput
           mt="md"
@@ -109,7 +137,6 @@ const Home: NextPage = () => {
           {...form.getInputProps('password')}
         />
 
-        {/* テキストとボタンを横並びにするためにGroupを使用 */}
         <Group mt="xl" position="apart">
           <Anchor
             component="button"
@@ -131,11 +158,28 @@ const Home: NextPage = () => {
             color="cyan"
             type="submit"
           >
-            {/* ログインモードかどうかで文言を切り替える */}
             {isRegister ? 'Register' : 'Login'}
           </Button>
         </Group>
-      </form>
+      </form> */}
+
+      
+      {isAuthenticated 
+        ?(
+          <button
+            onClick={() => {
+              logout({ returnTo: window.location.origin });
+            }}
+          >
+            Log out
+          </button>) 
+        :(
+          <button onClick={loginWithRedirect}>Log in</button>)
+      }
+
+
+      <Button onClick={getaccessToken}>getaccessToken</Button>
+
     </Layout>
   )
 }
