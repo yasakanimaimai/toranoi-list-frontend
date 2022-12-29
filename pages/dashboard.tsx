@@ -15,21 +15,17 @@ const Dashboard: NextPage = () => {
   const queryClient = useQueryClient()
   const { user, error, getAccessTokenWithPopup, getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
 
-  console.log("user:" + JSON.stringify(user))
 
   const logout = async () => {
     // react queryでブラウザにキャッシュした情報を削除
-    queryClient.removeQueries(['user'])
-    queryClient.removeQueries(['articles'])
-    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`)
+    // queryClient.removeQueries(['user'])
+    // queryClient.removeQueries(['articles'])
+    // await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`)
     router.push('/')
   }
 
   const getaccessToken = async () => {
-    // const accessToken = await getAccessTokenSilently({
-    //   audience: process.env.NEXT_PUBLIC_API_URL,
-    //   scope: "read:current_user",
-    // })
+
     const accessToken = await getAccessTokenWithPopup()
 
     console.log("accessToken:" + accessToken)
@@ -56,9 +52,9 @@ const Dashboard: NextPage = () => {
       >
       </LogoutIcon>
       <Button onClick={getaccessToken}>getaccessToken</Button>
-      {/* <Userinfo />
+      <Userinfo />
       <ArticleForm />
-      <ArticleList /> */}
+      <ArticleList />
     </Layout>
   )
 }

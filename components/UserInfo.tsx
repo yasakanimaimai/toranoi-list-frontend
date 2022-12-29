@@ -6,39 +6,41 @@ import { User } from "@prisma/client"
 
 export const Userinfo = () => {
 
-  // const { data: user, status } = useQueryUser()
-  // if (status === 'loading') return <Loader />
+  const { status, data } = useQueryUser()
 
-  const { error, getAccessTokenSilently } = useAuth0();
+  console.log("UserInfo user:" + JSON.stringify(data))
+  if (status === 'loading') return <Loader />
 
-  const getUser = async () => {
+  // const { error, getAccessTokenSilently } = useAuth0();
+  // const getUser = async () => {
     
-    const accessToken = await getAccessTokenSilently({
-      audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
-      scope: "read:current_user",
-    })
+  //   const accessToken = await getAccessTokenSilently({
+  //     audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
+  //     scope: "read:current_user",
+  //   })
 
-    const { data } = await axios.get<Omit<User, 'hashedPassword'>>(
-      `${process.env.NEXT_PUBLIC_API_URL}/user/get`, 
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        }
-      }
-    )
+  //   const { data } = await axios.get<Omit<User, 'hashedPassword'>>(
+  //     `${process.env.NEXT_PUBLIC_API_URL}/user/get`, 
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //       }
+  //     }
+  //   )
   
-    console.log("accessToken:" + accessToken)
-    console.log("error:" + error)
-    console.log("data:" + data)
+  //   console.log("accessToken:" + accessToken)
+  //   console.log("error:" + error)
+  //   console.log("data:" + data)
 
 
-    return data
-  }
+  //   return data
+  // }
 
   return (
     <>
-      <Button onClick={getUser}></Button>
-      {/* <p>{user?.name}</p> */}
+      {/* <Button onClick={getUser}>getUser</Button> */}
+      <p>{data?.name}</p>
+      <p>{data?.email}</p>
     </>
   )
 }

@@ -3,21 +3,32 @@ import axios from "axios"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { EditedArticle } from "../types"
 import useStore from "../store"
+import { useAuth0 } from "@auth0/auth0-react"
 
 // react queryでサーバ側とデータをやりとりする為のフック
 // zustandはブラウザのキャッシュをリセットするために呼び出している
 
 export const useMutateArticle = () => {
+
   const queryClient = useQueryClient()
   const router = useRouter()
   const reset = useStore((state) => state.resetEditedArticle)
+  const auth = useAuth0();
 
   // 記事作成
   const createArticleMutation = useMutation(
+    
     async (article: Omit<EditedArticle, 'id'>) => {
+      const accessToken = await auth.getAccessTokenSilently();
+
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/article/create`,
-        article
+        article,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        }
       )
       return res.data
     },
@@ -45,9 +56,15 @@ export const useMutateArticle = () => {
   // 記事更新
   const updateArticleMutation = useMutation(
     async (article: EditedArticle) => {
+      const accessToken = await auth.getAccessTokenSilently();
       const res = await axios.patch(
         `${process.env.NEXT_PUBLIC_API_URL}/article/update`,
-        article
+        article,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        }
       )
       return res.data
     },
@@ -76,10 +93,18 @@ export const useMutateArticle = () => {
   // 記事削除
   const deleteArticleMutation = useMutation(
     async (articleId: string) => {
+      const accessToken = await auth.getAccessTokenSilently()
+      console.log("deleteArticleMutation accessToken:" + accessToken)
+
       await axios.delete(
         `${process.env.NEXT_PUBLIC_API_URL}/article/delete`,
         // axios.deleteをbody付きにする方法 https://masteringjs.io/tutorials/axios/delete-with-body
-        {data: {id: articleId}}
+        {
+          data: {id: articleId},
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        }
       )
     },
     {
@@ -103,5 +128,10 @@ export const useMutateArticle = () => {
     }
   )
 
-  return { createArticleMutation, updateArticleMutation, deleteArticleMutation }
+  return { 
+    createArticleMutation, 
+    // postArticle, 
+    updateArticleMutation, 
+    deleteArticleMutation 
+  }
 }

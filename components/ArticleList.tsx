@@ -5,8 +5,10 @@ import { ArticleItem } from "./ArticleItem"
 import { ScrollArea } from '@mantine/core';
 
 export const ArticleList = () => {
-  const { data: articles, status } = useQueryArticles()
+  const { data, status } = useQueryArticles()
   if (status === 'loading') return <Loader my="lg" color="cyan" />
+
+  console.log("ArticleList  data:" + JSON.stringify(data))
 
   return (
     // <List
@@ -31,7 +33,7 @@ export const ArticleList = () => {
     // </List>
     // <ScrollArea style={{ height: 500 }}>
     <>
-      {articles?.map((article) => (
+      {data?.map((article) => (
         <ArticleItem
           key={article.id}
           id={article.id}

@@ -11,11 +11,19 @@ export const ArticleForm = () => {
   const update = useStore((state) => state.updateEditedArticle)
 
   // form起動時の処理にreact queryの関数を仕込む
-  const { createArticleMutation, updateArticleMutation } = useMutateArticle()
+  const { 
+    createArticleMutation, 
+    updateArticleMutation 
+  } = useMutateArticle()
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    console.log("handleSubmit")
+
     if (editedArticle.id === '') {
+      console.log("create")
       createArticleMutation.mutate({
+      // postArticle.mutate({
         siteTitle: editedArticle.siteTitle,
         siteUrl: editedArticle.siteUrl,
         abstractText: editedArticle.abstractText,

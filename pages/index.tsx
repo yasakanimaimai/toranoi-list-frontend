@@ -7,11 +7,7 @@ import { IconDatabase } from "@tabler/icons"
 import {ShieldCheckIcon} from '@heroicons/react/solid'
 import {ExclamationCircleIcon} from "@heroicons/react/solid"
 import {
-  Anchor,
-  TextInput,
   Button,
-  Group,
-  PasswordInput,
   Alert,
 } from '@mantine/core'
 import { useForm, yupResolver } from "@mantine/form"
@@ -36,39 +32,39 @@ const Home: NextPage = () => {
   const [error, setError] = useState('')
 
   // MantineとYupでフォームの設定を行う
-  const form = useForm<AuthForm>({
-    validate: yupResolver(schema),
-    initialValues: {
-      userName: '',
-      password: '',
-    },
-  })
+  // const form = useForm<AuthForm>({
+  //   validate: yupResolver(schema),
+  //   initialValues: {
+  //     userName: '',
+  //     password: '',
+  //   },
+  // })
 
-  const handleSubmit = async () => {
-    try {
-      console.log('handleSubmit')
-      // サインアップしていない時に実行する
-      if (isRegister) {
-        // このデータがNestjsのdtoに渡される
-        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
-          userName: form.values.userName,
-          password: form.values.password,
-        })
-      }
+  // const handleSubmit = async () => {
+  //   try {
+  //     console.log('handleSubmit')
+  //     // サインアップしていない時に実行する
+  //     if (isRegister) {
+  //       // このデータがNestjsのdtoに渡される
+  //       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
+  //         userName: form.values.userName,
+  //         password: form.values.password,
+  //       })
+  //     }
 
-      // サインアップが完了したらそのままログイン処理
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        userName: form.values.userName,
-        password: form.values.password,
-      })
+  //     // サインアップが完了したらそのままログイン処理
+  //     await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+  //       userName: form.values.userName,
+  //       password: form.values.password,
+  //     })
 
-      // フォームをリセット
-      form.reset()
-      router.push('/dashboard')
-    } catch (e: any) {
-      setError(e.response.data.message)
-    }
-  }
+  //     // フォームをリセット
+  //     form.reset()
+  //     router.push('/dashboard')
+  //   } catch (e: any) {
+  //     setError(e.response.data.message)
+  //   }
+  // }
 
   // 以下認証系
   const { isAuthenticated, getAccessTokenWithPopup, getAccessTokenSilently, loginWithRedirect, logout } = useAuth0();
@@ -95,7 +91,6 @@ const Home: NextPage = () => {
     console.log("data:" + JSON.stringify(data))
   }
 
-
   return (
     // まずはLayoutでラップ
     <Layout title="Auth">
@@ -114,56 +109,6 @@ const Home: NextPage = () => {
         </Alert>
       )}
 
-      {/* 本来はonSubmitに関数を設置するときはprevent defaultを設定するが
-          form.onSubmitでラップするとそれが不要になる
-      */}
-{/* 
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <TextInput
-          mt="md"
-          id="username"
-          label="Username*"
-          placeholder="toranoi"
-          // 通常はvalueとonChangeに加えて、各stateと更新用のロジックが必要になるが
-          // mantain uiのuseFormだと以下の１行で全てやってくれる
-          {...form.getInputProps('userName')}
-        />
-        <PasswordInput 
-          mt="md"
-          id="password"
-          placeholder="password"
-          label="Password*"
-          description="Must be min 5 char"
-          {...form.getInputProps('password')}
-        />
-
-        <Group mt="xl" position="apart">
-          <Anchor
-            component="button"
-            type="button"
-            size="xs"
-            className="text-gray-300"
-            onClick={() => {
-              setIsRegister(!isRegister)
-              setError('')
-            }}
-          >
-            {isRegister
-              ? 'Have an account? Login'
-              : "Don't have as account? Register"
-            }
-          </Anchor>
-          <Button 
-            leftIcon={<IconDatabase size={14} />}
-            color="cyan"
-            type="submit"
-          >
-            {isRegister ? 'Register' : 'Login'}
-          </Button>
-        </Group>
-      </form> */}
-
-      
       {isAuthenticated 
         ?(
           <button
@@ -177,9 +122,7 @@ const Home: NextPage = () => {
           <button onClick={loginWithRedirect}>Log in</button>)
       }
 
-
       <Button onClick={getaccessToken}>getaccessToken</Button>
-
     </Layout>
   )
 }
