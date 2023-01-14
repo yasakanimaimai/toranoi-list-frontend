@@ -128,14 +128,13 @@ export const ArticleItem: FC<EditedArticle> = ({
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6" style={{cursor:"pointer", color:"#333631"}}>
               <path fillRule="evenodd" d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" clipRule="evenodd" />
             </svg>
-
           </Menu.Target>
 
           <Menu.Dropdown>
             <Menu.Item icon={<IconCopy size={14} />} onClick={copyTextOnClipboard}>Copy</Menu.Item>
             <Menu.Item icon={<IconExternalLink size={14} />}>
               <a href={siteUrl} target="_blank" rel="noopener noreferrer" style={{color:"inherit", textDecoration:"none"}}>
-                  Follow link
+                  Go page
               </a>
             </Menu.Item>
             <Menu.Item color="red" icon={<IconTrash size={14} />} onClick={() => {deleteArticleMutation.mutate(id)}}>Delete</Menu.Item>

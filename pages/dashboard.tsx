@@ -46,14 +46,14 @@ const Dashboard: NextPage = () => {
 
   return (
     <Layout title="Article Board">
-      <LogoutIcon 
+      {/* <LogoutIcon 
         className="mb-6 h-6 w-6 cursor-pointer text-blue-500"
         onClick={logout} 
       >
       </LogoutIcon>
-      <Button onClick={getaccessToken}>getaccessToken</Button>
-      <Userinfo />
-      <ArticleForm />
+      <Button onClick={getaccessToken}>getaccessToken</Button> */}
+      {/* <Userinfo />
+      <ArticleForm /> */}
       <ArticleList />
     </Layout>
   )
