@@ -3,12 +3,18 @@ import { List, ThemeIcon, Loader } from "@mantine/core"
 import { IconCircleDashed } from "@tabler/icons"
 import { ArticleItem } from "./ArticleItem" 
 import { ScrollArea } from '@mantine/core';
+import { useAuth0 } from "@auth0/auth0-react"
 
 export const ArticleList = () => {
   const { data, status } = useQueryArticles()
+  const { loginWithRedirect } = useAuth0();
   if (status === 'loading') return <Loader my="lg" color="cyan" />
+  if (status === 'error') {
+    loginWithRedirect()
+  }
 
-  console.log("ArticleList  data:" + JSON.stringify(data))
+  // console.log("ArticleList  status:" + JSON.stringify(status))
+  // console.log("ArticleList  data:" + JSON.stringify(data))
 
   return (
     // <List
