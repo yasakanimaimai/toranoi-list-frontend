@@ -1,22 +1,12 @@
 import { FC } from "react"
 import { 
-  List,
   Text, 
   Paper,
-  Title,
-  Box,
-  Textarea,
-  Card,
   Group,
   Menu,
-  ActionIcon,
-  SimpleGrid,
-  ColorInput,
   Button,
 } from "@mantine/core"
-import { PencilAltIcon, TrashIcon } from "@heroicons/react/solid"
 import { EditedArticle } from "../types"
-import useStore from "../store"
 import { useMutateArticle } from "../hooks/useMutateArticles"
 import { IconArrowsLeftRight, IconCopy, IconDots, IconExternalLink, IconEye, IconFileZip, IconMessageCircle, IconPhoto, IconSearch, IconSettings, IconTrash } from "@tabler/icons"
 
@@ -27,11 +17,6 @@ export const ArticleItem: FC<EditedArticle> = ({
   siteUrl,
   abstractText,
 }) => {
-  // 編集する記事の内容を入力欄に表示するためにzustandを使う
-  // const update = useStore((state) => state.updateEditedArticle)
-
-  // const { editedArticle } = useStore()
-
   // react queryを使って編集・削除する
   const { updateArticleMutation, deleteArticleMutation } = useMutateArticle()
 
@@ -43,8 +28,7 @@ export const ArticleItem: FC<EditedArticle> = ({
     e.target.style.cursor = 'text'
     e.target.style.WebkitLineClamp = 9999
     
-
-    // // saveとcancelボタンを追加
+    // saveとcancelボタンを追加
     const cancelButton = document.getElementById(id + '-cancel')
     const saveButton = document.getElementById(id + '-save')    
     if (cancelButton?.style.visibility) {
@@ -63,12 +47,10 @@ export const ArticleItem: FC<EditedArticle> = ({
   }
 
   // saveボタン押下
-  const updateArticle = (e: any) => {
-    console.log("updateArticle")
+  const updateArticle = async (e: any) => {
     
     const textarea = document.getElementById(id + '-textarea') as HTMLTextAreaElement
 
-    console.log('textarea:' + textarea.value)
     let text = ''
     if (textarea) {
       text = textarea.value
@@ -80,9 +62,6 @@ export const ArticleItem: FC<EditedArticle> = ({
       siteUrl: siteUrl,
       abstractText: text,
     })
-
-    // update({ ...editedArticle, abstractText: '変更' })
-
   }
 
   // キャンセルボタン押下
@@ -94,30 +73,6 @@ export const ArticleItem: FC<EditedArticle> = ({
   const paperColor = '#e6eae3'
 
   return (
-    // 初期バージョン
-    // <List.Item>
-    //   <div className="float-left mr-10">
-    //     <PencilAltIcon 
-    //       className="mx-1 h-5 w-5 cursor-pointer text-blue-500"
-    //       onClick={() => {
-    //         update({
-    //           id,
-    //           siteTitle,
-    //           siteUrl,
-    //           abstractText,
-    //         })
-    //       }}
-    //     />
-    //     <TrashIcon 
-    //       className="h-5 w-5 cursor-pointer text-blue-500"
-    //       onClick={() => {
-    //         deleteArticleMutation.mutate(id)
-    //       }}
-    //     />
-    //   </div>
-    //   <span>{siteTitle}</span>
-    // </List.Item>
-
     <Paper shadow="md" p="md" radius={10} withBorder style={{marginTop:"50px", marginBottom:"20px", width: "600px", backgroundColor:paperColor, }}>
       <div className="flex">
 
