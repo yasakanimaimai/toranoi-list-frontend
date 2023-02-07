@@ -3,7 +3,7 @@ export type AuthForm = {
   password: string
 }
 
-export type EditedArticle = {
+export type Article = {
   id: string
   siteUrl: string
   siteTitle: string

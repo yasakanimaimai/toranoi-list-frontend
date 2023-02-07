@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useQuery } from "@tanstack/react-query";
-import { EditedArticle } from "../types";
+import { Article } from "../types";
 import { useAuth0 } from "@auth0/auth0-react"
 
 export const useQueryArticles = () => {
@@ -11,7 +11,7 @@ export const useQueryArticles = () => {
 const getArticles = async (auth: any) => {
   const accessToken = await auth.getAccessTokenSilently();
 
-  const { data } = await axios.get<EditedArticle[]>(
+  const { data } = await axios.get<Article[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/article/get`,
     {
       headers: {

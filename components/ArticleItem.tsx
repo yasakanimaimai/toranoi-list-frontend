@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useState } from "react"
 import { 
   Text, 
   Paper,
@@ -6,17 +6,19 @@ import {
   Menu,
   Button,
 } from "@mantine/core"
-import { EditedArticle } from "../types"
+import { Article } from "../types"
 import { useMutateArticle } from "../hooks/useMutateArticles"
 import { IconArrowsLeftRight, IconCopy, IconDots, IconExternalLink, IconEye, IconFileZip, IconMessageCircle, IconPhoto, IconSearch, IconSettings, IconTrash } from "@tabler/icons"
 
-
-export const ArticleItem: FC<EditedArticle> = ({
+export const ArticleItem: FC<Article> = ({
   id,
   siteTitle,
   siteUrl,
   abstractText,
 }) => {
+
+  const [text, setText] = useState(abstractText)
+
   // react queryを使って編集・削除する
   const { updateArticleMutation, deleteArticleMutation } = useMutateArticle()
 
@@ -27,10 +29,10 @@ export const ArticleItem: FC<EditedArticle> = ({
     e.target.style.height = scrollHeight + 'px';
     e.target.style.cursor = 'text'
     e.target.style.WebkitLineClamp = 9999
-    
+
     // saveとcancelボタンを追加
     const cancelButton = document.getElementById(id + '-cancel')
-    const saveButton = document.getElementById(id + '-save')    
+    const saveButton = document.getElementById(id + '-save')
     if (cancelButton?.style.visibility) {
       cancelButton.style.visibility = "visible"
     }
@@ -41,21 +43,12 @@ export const ArticleItem: FC<EditedArticle> = ({
 
   // コピーを押した時
   const copyTextOnClipboard = (e: any) => {
-    // リアルタイムのテキストをコピーできるように修正必要
     const markdownSiteTitle = `[${siteTitle}](${siteUrl}) \n`
-    navigator.clipboard.writeText(markdownSiteTitle + abstractText)
+    navigator.clipboard.writeText(markdownSiteTitle + text)
   }
 
   // saveボタン押下
   const updateArticle = async (e: any) => {
-    
-    const textarea = document.getElementById(id + '-textarea') as HTMLTextAreaElement
-
-    let text = ''
-    if (textarea) {
-      text = textarea.value
-    }
-
     updateArticleMutation.mutate({
       id: id,
       siteTitle: siteTitle,
@@ -64,10 +57,10 @@ export const ArticleItem: FC<EditedArticle> = ({
     })
   }
 
-  // キャンセルボタン押下
+  // リセットボタン押下
   const reset = () => {
     const textarea = document.getElementById(id + '-textarea') as HTMLTextAreaElement
-    textarea.value = textarea.defaultValue
+    textarea.value = abstractText
   }
 
   const paperColor = '#e6eae3'
@@ -102,8 +95,7 @@ export const ArticleItem: FC<EditedArticle> = ({
 
       <textarea 
         id={id + '-textarea'}
-        defaultValue={abstractText}
-        // value={abstractText}
+        defaultValue={text}
         readOnly
         rows={3} 
         style={{
@@ -123,9 +115,9 @@ export const ArticleItem: FC<EditedArticle> = ({
           letterSpacing: 1.5,
         }}
         onClick={editableTextarea}
-        // onChange={(e) => {
-        //   update({ ...editedArticle, abstractText: e.target.value })
-        // }}
+        onChange={(e) => {
+          setText(e.target.value)
+        }}
       />
       
       <div className="" style={{height:"30px", marginTop:"15px"}}>
@@ -133,7 +125,7 @@ export const ArticleItem: FC<EditedArticle> = ({
         <Group position="right" spacing="lg">
 
           <Button id={id + '-cancel'} className="cancel-button" size="xs" onClick={reset} style={{backgroundColor:"#90A4AE", visibility:"hidden" }}>
-            Cancel
+            Reset
           </Button>
 
           <Button id={id + '-save'} className="save-button" size="xs" onClick={updateArticle} style={{backgroundColor:"#448AFF", visibility:"hidden"}}>
