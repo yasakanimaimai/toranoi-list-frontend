@@ -6,10 +6,15 @@ import {
   Menu,
   Button,
   LoadingOverlay,
+  NavLink,
+  Indicator,
+  Tooltip,
+  Anchor,
 } from "@mantine/core"
 import { Article } from "../types"
 import { useMutateArticle } from "../hooks/useMutateArticles"
-import { IconArrowsLeftRight, IconCopy, IconDots, IconExternalLink, IconEye, IconFileZip, IconMessageCircle, IconPhoto, IconSearch, IconSettings, IconTrash } from "@tabler/icons"
+import { IconCopy, IconExternalLink, IconTrash,  } from "@tabler/icons"
+import { IconDotsVertical } from '@tabler/icons-react';
 
 export const ArticleItem: FC<Article> = ({
   id,
@@ -19,80 +24,100 @@ export const ArticleItem: FC<Article> = ({
 }) => {
 
   const [text, setText] = useState(abstractText)
+  const [buttunVisibility, setButtunVisibility] = useState("hidden")
+  const {updateArticleMutation, deleteArticleMutation } = useMutateArticle()
+  const ARTICLE_COLOR = '#e6eae3'
 
-  // react queryを使って編集・削除する
-  const { updateArticleMutation, deleteArticleMutation } = useMutateArticle()
+  const MenuGroup: FC = () => {
 
-  // テキストエリアをクリックしたとき
-  const editableTextarea = (e: any) => {
-    e.target.readOnly = false
-    const scrollHeight = e.target.scrollHeight;
-    e.target.style.height = scrollHeight + 'px';
-    e.target.style.cursor = 'text'
-    e.target.style.WebkitLineClamp = 9999
-
-    // saveとcancelボタンを追加
-    const cancelButton = document.getElementById(id + '-cancel')
-    const saveButton = document.getElementById(id + '-save')
-    if (cancelButton?.style.visibility) {
-      cancelButton.style.visibility = "visible"
+    const onClickCopyLink = () => {
+      const markdownSiteTitle = `[${siteTitle}](${siteUrl}) \n`
+      navigator.clipboard.writeText(markdownSiteTitle + text)
     }
-    if (saveButton?.style.visibility) {
-      saveButton.style.visibility = "visible"
+
+    return (
+      <Menu shadow="md" width={200}>
+        <Menu.Target>
+          <IconDotsVertical size={20} style={{cursor:"pointer", color:"#333631"}}/>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Item 
+            icon={<IconCopy size={14} />} 
+            onClick={onClickCopyLink}
+          >
+            Copy
+          </Menu.Item>
+
+          <Menu.Item icon={<IconExternalLink size={14} />}>
+            <Anchor 
+              href={siteUrl} 
+              target="_blank" 
+              rel="noreferrer" 
+              underline={false} 
+              variant="text"
+            >
+              Go page
+            </Anchor>
+          </Menu.Item>
+
+          <Menu.Item 
+            color="red" 
+            icon={<IconTrash size={14} />} 
+            onClick={() => {deleteArticleMutation.mutate(id)}}
+          >
+            Delete
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    )
+  }
+
+  const onClickTextarea = (e: React.MouseEvent<HTMLTextAreaElement>) => {
+    e.currentTarget.readOnly = false
+    e.currentTarget.style.height = e.currentTarget.scrollHeight + "px"
+    e.currentTarget.style.cursor = 'text'
+    e.currentTarget.style.webkitLineClamp = "9999"
+    setButtunVisibility('visible')
+  }
+
+  const ButtonGroup: FC<{visibility: string}> = (props) => {
+
+    if (props.visibility === 'hide') {
+      return <Group position="right" spacing="lg"></Group>
     }
-  }
 
-  // コピーを押した時
-  const copyTextOnClipboard = (e: any) => {
-    const markdownSiteTitle = `[${siteTitle}](${siteUrl}) \n`
-    navigator.clipboard.writeText(markdownSiteTitle + text)
-  }
+    const onClickSaveBtn = async () => {
+      updateArticleMutation.mutate({
+        id: id,
+        siteTitle: siteTitle,
+        siteUrl: siteUrl,
+        abstractText: text,
+      })
+    }
 
-  // saveボタン押下
-  const updateArticle = async (e: any) => {
-    updateArticleMutation.mutate({
-      id: id,
-      siteTitle: siteTitle,
-      siteUrl: siteUrl,
-      abstractText: text,
-    })
+    return (
+      <Group position="right" spacing="lg">
+        <Button 
+          className="save-button" 
+          size="xs" 
+          onClick={onClickSaveBtn} 
+          style={{backgroundColor:"#448AFF"}}
+        >
+          Save
+        </Button>
+      </Group>
+    )
   }
-
-  // リセットボタン押下
-  const reset = () => {
-    const textarea = document.getElementById(id + '-textarea') as HTMLTextAreaElement
-    textarea.value = abstractText
-  }
-
-  const paperColor = '#e6eae3'
 
   return (
     <div style={{position: 'relative'}}>
       <LoadingOverlay visible={updateArticleMutation.isLoading || deleteArticleMutation.isLoading} overlayBlur={2} overlayColor={"1"} radius={10} />
-      <Paper shadow="md" p="md" radius={10} withBorder style={{marginTop:"50px", marginBottom:"20px", width: "600px", backgroundColor:paperColor, }}>
+      <Paper shadow="md" p="md" radius={10} withBorder style={{marginTop:"50px", marginBottom:"20px", width: "600px", backgroundColor:ARTICLE_COLOR, }}>
 
         <div className="flex">
-
           <Text lineClamp={3} size="lg" weight={900} style={{width:"95%", color:"#333631",}}>{siteTitle}</Text>
-            
-          <Menu shadow="md" width={200}>
-            <Menu.Target>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6" style={{cursor:"pointer", color:"#333631"}}>
-                <path fillRule="evenodd" d="M10.5 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zm0 6a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" clipRule="evenodd" />
-              </svg>
-            </Menu.Target>
-
-            <Menu.Dropdown>
-              <Menu.Item icon={<IconCopy size={14} />} onClick={copyTextOnClipboard}>Copy</Menu.Item>
-              <Menu.Item icon={<IconExternalLink size={14} />}>
-                <a href={siteUrl} target="_blank" rel="noopener noreferrer" style={{color:"inherit", textDecoration:"none"}}>
-                    Go page
-                </a>
-              </Menu.Item>
-              <Menu.Item color="red" icon={<IconTrash size={14} />} onClick={() => {deleteArticleMutation.mutate(id)}}>Delete</Menu.Item>
-
-            </Menu.Dropdown>
-          </Menu>
+          <MenuGroup />
         </div>
 
         <hr style={{borderTop: "0.5px solid rgba(0, 0, 0, 0.1)", borderBottom: "0.5px solid rgba(255, 255, 255, 0.2)"}}></hr>
@@ -106,7 +131,7 @@ export const ArticleItem: FC<Article> = ({
             overflow:"hidden",
             width:"100%", 
             resize:"none",
-            backgroundColor:paperColor,
+            backgroundColor:ARTICLE_COLOR,
             color:"#333631",
             border:"none",
             display: "-webkit-box",
@@ -118,26 +143,14 @@ export const ArticleItem: FC<Article> = ({
             fontFamily: 'Inter',
             letterSpacing: 1.5,
           }}
-          onClick={editableTextarea}
+          onClick={onClickTextarea}
           onChange={(e) => {
             setText(e.target.value)
           }}
         />
         
-        <div className="" style={{height:"30px", marginTop:"15px"}}>
-
-          <Group position="right" spacing="lg">
-
-            <Button id={id + '-cancel'} className="cancel-button" size="xs" onClick={reset} style={{backgroundColor:"#90A4AE", visibility:"hidden" }}>
-              Reset
-            </Button>
-
-            <Button id={id + '-save'} className="save-button" size="xs" onClick={updateArticle} style={{backgroundColor:"#448AFF", visibility:"hidden"}}>
-              Save
-            </Button>
-
-          </Group>
-
+        <div className="" style={{height:"25px", marginTop:"15px"}}>
+          <ButtonGroup visibility={buttunVisibility} />
         </div>
       </Paper>
     </div>

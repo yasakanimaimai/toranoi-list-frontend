@@ -4,33 +4,32 @@ import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { Article } from "../types"
 import { useAuth0 } from "@auth0/auth0-react"
 
-// react queryでサーバ側とデータをやりとりする為のフック
-
 export const useMutateArticle = () => {
 
   const queryClient = useQueryClient()
   const router = useRouter()
   const auth = useAuth0();
 
+  const createPath = `${process.env.NEXT_PUBLIC_API_URL}/article/create`
+  const updatePath = `${process.env.NEXT_PUBLIC_API_URL}/article/update`
+  const deletePath = `${process.env.NEXT_PUBLIC_API_URL}/article/delete`
+
   // 記事作成
   const createArticleMutation = useMutation(
-    
     async (article: Omit<Article, 'id'>) => {
       const accessToken = await auth.getAccessTokenSilently();
-
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/article/create`,
-        article,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          }
+      const config = {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         }
+      }
+      const res = await axios.post(
+        createPath,
+        article,
+        config
       )
       return res.data
     },
-
-    // 上記処理の結果を受けて成功時と失敗時の処理を以下に持つ
     {
       onSuccess: (res) => {
         // 新しく作成した記事をキャッシュに加える
@@ -52,25 +51,23 @@ export const useMutateArticle = () => {
   const updateArticleMutation = useMutation(
     async (article: Article) => {
       const accessToken = await auth.getAccessTokenSilently();
+      const config = {
+        headers: {Authorization: `Bearer ${accessToken}`}
+      }
       const res = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/article/update`,
+        updatePath,
         article,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          }
-        }
+        config
       )
       return res.data
     },
     {
-      // 成功したら更新した内容で変更したキャッシュのタスクを上書き
+      // 更新した内容でキャッシュの記事を上書き
       onSuccess: (res, variables) => {
         const previousArticles = queryClient.getQueryData<Article[]>(['articles'])
         if (previousArticles) {
           queryClient.setQueryData(
             ['articles'],
-            // 修正した記事だけキャッシュを上書きする
             previousArticles.map((article) => (article.id === res.id ? res : article))
           )
         }
@@ -87,11 +84,8 @@ export const useMutateArticle = () => {
   const deleteArticleMutation = useMutation(
     async (articleId: string) => {
       const accessToken = await auth.getAccessTokenSilently()
-      console.log("deleteArticleMutation accessToken:" + accessToken)
-
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL}/article/delete`,
-        // axios.deleteをbody付きにする方法 https://masteringjs.io/tutorials/axios/delete-with-body
+        deletePath,
         {
           data: {id: articleId},
           headers: {
@@ -121,7 +115,6 @@ export const useMutateArticle = () => {
 
   return { 
     createArticleMutation, 
-    // postArticle, 
     updateArticleMutation, 
     deleteArticleMutation 
   }
