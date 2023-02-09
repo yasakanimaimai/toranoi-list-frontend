@@ -4,7 +4,7 @@ import { IconCopy, IconExternalLink, IconTrash,  } from '@tabler/icons'
 import { IconDotsVertical } from '@tabler/icons-react';
 import { UseMutationResult } from '@tanstack/react-query'
 
-type Prop = {
+type Props = {
   id: string
   siteTitle: string
   siteUrl: string
@@ -12,7 +12,7 @@ type Prop = {
   deleteMutation: UseMutationResult<void, any, string, unknown>
 }
 
-export const ArticleItemMenu: FC<Prop> = ({
+export const ArticleItemMenu: FC<Props> = ({
   id,
   siteTitle,
   siteUrl,

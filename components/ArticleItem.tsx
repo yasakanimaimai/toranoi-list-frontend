@@ -2,13 +2,12 @@ import { FC, useState } from "react"
 import { 
   Text, 
   Paper,
-  Group,
-  Button,
 } from "@mantine/core"
 import { Article } from "../types"
 import { useMutateArticle } from "../hooks/useMutateArticles"
 import { LoadingFrame } from "./LoadingFrame"
 import { ArticleItemMenu } from "./ArticleItemMenu"
+import { ArticleItemButton } from "./ArticleItemButton"
 
 export const ArticleItem: FC<Article> = ({
   id,
@@ -28,35 +27,6 @@ export const ArticleItem: FC<Article> = ({
     e.currentTarget.style.cursor = 'text'
     e.currentTarget.style.webkitLineClamp = "9999"
     setButtunVisibility('visible')
-  }
-
-  const ButtonGroup: FC<{visibility: string}> = (props) => {
-
-    if (props.visibility !== 'visible') {
-      return <Group position="right" spacing="lg"></Group>
-    }
-
-    const onClickSaveBtn = async () => {
-      updateArticleMutation.mutate({
-        id: id,
-        siteTitle: siteTitle,
-        siteUrl: siteUrl,
-        abstractText: text,
-      })
-    }
-
-    return (
-      <Group position="right" spacing="lg">
-        <Button 
-          className="save-button" 
-          size="xs" 
-          onClick={onClickSaveBtn} 
-          style={{backgroundColor:"#448AFF"}}
-        >
-          Save
-        </Button>
-      </Group>
-    )
   }
 
   return (
@@ -104,7 +74,11 @@ export const ArticleItem: FC<Article> = ({
         />
         
         <div style={{height:"25px", marginTop:"15px"}}>
-          <ButtonGroup visibility={buttunVisibility} />
+          <ArticleItemButton 
+            visibility={buttunVisibility}
+            article={{id, siteTitle, siteUrl, abstractText: text}}
+            updateMutation={updateArticleMutation}
+          />
         </div>
       </Paper>
     </LoadingFrame>
