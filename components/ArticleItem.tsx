@@ -1,8 +1,5 @@
 import { FC, useState } from "react"
-import { 
-  Text, 
-  Paper,
-} from "@mantine/core"
+import { Text, Paper } from "@mantine/core"
 import { Article } from "../types"
 import { useMutateArticle } from "../hooks/useMutateArticles"
 import { LoadingFrame } from "./LoadingFrame"
@@ -69,7 +66,7 @@ export const ArticleItem: FC<Article> = ({
           }}
           onClick={onClickTextarea}
           onChange={(e) => {
-            setText(e.target.value)
+            setText(e.currentTarget.value)
           }}
         />
         
